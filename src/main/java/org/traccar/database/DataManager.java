@@ -367,6 +367,14 @@ public class DataManager {
         return String.format("%s in (%s)", column, String.join(",", list.stream().map(String::valueOf).collect(Collectors.toList())));
     }
 
+    private String formatSpeedRange(String column, int min, int max){
+        if(max > 0){
+            return String.format("%s BETWEEN %d AND %d", column, min, max);
+        }
+        else{
+            return String.format("%s >= %d", column, min);
+        }
+    }
 
     public Collection<ExtendedEvent> getOverspeedEvents(
             List<Long> groupIds,
@@ -407,48 +415,30 @@ public class DataManager {
         }
 
         clauses.add("tc_events.type = 'deviceOverspeed'");
+
         if(!isEmptyList(geofences)){
             String inClause = createInClause("geofenceid", geofences);
             if(includeOutsideGeofences)
-                clauses.add(String.format(" (%s OR geofenceid is NULL)", inClause));
+                clauses.add(String.format("(%s OR geofenceid is NULL)", inClause));
             else
                 clauses.add(inClause);
-
         }
-
 
         if(!includeOutsideGeofences){
-            clauses.add(" geofenceid IS NOT NULL");
+            clauses.add("geofenceid IS NOT NULL");
         }
 
-        if(maxDeviceSpeed > 0) {
-            clauses.add(String.format("tc_positions.speed BETWEEN %d AND %d", minDeviceSpeed, maxDeviceSpeed));
-        }
-        else{
-            clauses.add(String.format("tc_positions.speed >= %d", minDeviceSpeed));
-        }
-        if(maxDeviceSpeedLimit > 0){
-            clauses.add(String.format("CAST (tc_devices.attributes::jsonb->'speedLimit' as FLOAT) BETWEEN %d AND %d", minDeviceSpeedLimit, maxDeviceSpeedLimit));
-        }
-        else{
-            clauses.add(String.format("CAST (tc_devices.attributes::jsonb->'speedLimit' as FLOAT) >= %d", minDeviceSpeedLimit));
-        }
-        String geofenceSpeedLimit = "";
-        if(maxGeofenceSpeedLimit > 0){
+        clauses.add(formatSpeedRange("tc_positions.speed", minDeviceSpeed, maxDeviceSpeed));
+        clauses.add(formatSpeedRange("CAST (tc_devices.attributes::jsonb->'speedLimit' as FLOAT)", minDeviceSpeedLimit, maxDeviceSpeedLimit));
 
-            geofenceSpeedLimit = String.format("CAST (tc_geofences.attributes::jsonb->'speedLimit' as FLOAT) BETWEEN %d AND %d", minGeofenceSpeedLimit, maxGeofenceSpeedLimit);
-        }
-        else{
-            geofenceSpeedLimit = String.format("CAST (tc_geofences.attributes::jsonb->'speedLimit' as FLOAT) >= %d", minGeofenceSpeedLimit);
-        }
-
+        String geofenceSpeedLimit = formatSpeedRange("CAST (tc_geofences.attributes::jsonb->'speedLimit' as FLOAT)", minGeofenceSpeedLimit, maxGeofenceSpeedLimit);
         if(includeOutsideGeofences)
             geofenceSpeedLimit += " OR geofenceid IS NULL";
+
         clauses.add(geofenceSpeedLimit);
+        clauses.add("eventTime between :from AND :to");
 
-        clauses.add("eventTime between :from AND :to ) ORDER BY eventTime");
-
-        query.append(String.format("(%s", String.join(") AND (", clauses)));
+        query.append(String.format("(%s)", String.join(") AND (", clauses))).append(" ORDER BY eventTime");
 
         return QueryBuilder.create(dataSource, query.toString())
                 .setDate("from", from)
