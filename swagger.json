@@ -1531,16 +1531,149 @@
     "/events/overspeed": {
       "get": {
         "summary": "Fetch a list of the overspeed events within the time period for the devices, groups and/or the user doing the request",
-        "description": "if no group id nor list of device ids is provided, the result will contain all the user's events",
-        "tags": ["Reports"],
+        "description": "if no group id nor device id is provided, the result will contain all the user's events",
+        "tags": [
+          "Events"
+        ],
         "parameters": [
           {
-
+            "description": "List of groups whose device events will be included in the response, if no group id nor device id is provided, all the user events will be included in the response",
+            "name": "groupIds",
+            "in": "query",
+            "style": "form",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "description": "List of devices whose events will be included,  if no group id nor device id is provided, all the user events will be included in the response.",
+            "name": "deviceIds",
+            "in": "query",
+            "style": "form",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "description": "List of geofences whose events will be included, if no geofence id is provided, all the events in any geofence will be included in the response.",
+            "name": "geofenceIds",
+            "in": "query",
+            "style": "form",
+            "required": false,
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          },
+          {
+            "description": "If true, events that didn't weren't triggered by a geofence will be included in the result",
+            "name": "includeOutsideGeofences",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "in IS0 8601 format. eg. `1963-11-22T18:30:00Z`",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "in IS0 8601 format. eg. `1963-11-22T18:30:00Z`",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "maxDeviceSpeed",
+            "in": "query",
+            "description": "If specified, filters the results where the device's speed during the event is less or equal to the value",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "minDeviceSpeed",
+            "in": "query",
+            "description": "If specified, filters the results where the device's speed during the event is greater or equal to the value",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "maxDeviceSpeedLimit",
+            "in": "query",
+            "description": "If specified, filters the results where the device's speed limit is less or equal to the value",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "minDeviceSpeedLimit",
+            "in": "query",
+            "description": "If specified, filters the results where the device's speed limit is greater or equal to the value",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "maxGeofenceSpeedLimit",
+            "in": "query",
+            "description": "If specified, filters the results where the geofence's speed limit during the event is less or equal to the value",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "minGeofenceSpeedLimit",
+            "in": "query",
+            "description": "If specified, filters the results where the geofence's speed limit during the event is greater or equal to the value",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
           }
-        ]
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtendedEvent"
+                }
+              }
+            }
+          }
+        }
       }
-    }
-    ,
+
+    },
     "/reports/route": {
       "get": {
         "summary": "Fetch a list of Positions within the time period for the Devices or Groups",
@@ -1710,6 +1843,7 @@
         }
       }
     },
+
     "/reports/summary": {
       "get": {
         "summary": "Fetch a list of ReportSummary within the time period for the Devices or Groups",
@@ -3018,6 +3152,41 @@
           },
           "maintenanceId": {
             "type": "integer"
+          },
+          "attributes": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      },
+      "ExtendedEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "type": {
+            "type": "string"
+          },
+          "eventTime": {
+            "type": "string",
+            "description": "in IS0 8601 format. eg. `1963-11-22T18:30:00Z`",
+            "format": "date-time"
+          },
+          "deviceId": {
+            "type": "integer"
+          },
+          "positionId": {
+            "type": "integer"
+          },
+          "geofenceId": {
+            "type": "integer"
+          },
+          "maintenanceId": {
+            "type": "integer"
+          },
+          "geofenceName": {
+            "type": "string"
           },
           "attributes": {
             "type": "object",
