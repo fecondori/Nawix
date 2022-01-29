@@ -16,21 +16,26 @@
 package org.traccar.api.resource;
 
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.temporal.TemporalUnit;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import liquibase.pro.packaged.Q;
 import org.traccar.Context;
 import org.traccar.api.BaseResource;
-import org.traccar.model.Event;
-import org.traccar.model.Geofence;
-import org.traccar.model.Maintenance;
+import org.traccar.model.*;
+import org.traccar.model.Calendar;
 
 @Path("events")
 @Produces(MediaType.APPLICATION_JSON)
@@ -54,5 +59,53 @@ public class EventResource extends BaseResource {
         }
         return event;
     }
+
+
+    @Path("/overspeed")
+    @GET
+    public Collection<ExtendedEvent> get(
+            @QueryParam("groupIds") List<Long> groupIds,
+            @QueryParam("deviceIds") List<Long> deviceIds,
+            @QueryParam("from") Date from,
+            @QueryParam("to") Date to,
+            @QueryParam("geofenceIds") List<Long> geofencesIds,
+            @QueryParam("includeOutsideGeofences") boolean includeOutsideGeofences,
+            @QueryParam("minGeofenceSpeedLimit") int minGeofenceSpeedLimit,
+            @QueryParam("naxGeofenceSpeedLimit") int naxGeofenceSpeedLimit,
+            @QueryParam("minDeviceSpeed") int minDeviceSpeed,
+            @QueryParam("maxDeviceSpeed") int maxDeviceSpeed,
+            @QueryParam("minDeviceSpeedLimit") int minDeviceSpeedLimit,
+            @QueryParam("maxDeviceSpeedLimit") int maxDeviceSpeedLimit
+            ) throws SQLException {
+
+        if(from == null){
+            //System.out.println("No from date provided");
+            LocalDate local = LocalDate.now().minusYears(100);
+            from = java.sql.Date.from(local.atStartOfDay().toInstant(ZoneOffset.UTC));
+        }
+        if(to == null){
+            //System.out.println("No to date provided");
+            LocalDate local = LocalDate.now().plusYears(1);
+            to = java.sql.Date.from(local.atStartOfDay().toInstant(ZoneOffset.UTC));
+        }
+
+        // Optimize performance of permissions
+
+        Collection<ExtendedEvent>events = Context.getDataManager().getOverspeedEvents(groupIds, deviceIds, from, to, geofencesIds, includeOutsideGeofences, minDeviceSpeed, maxDeviceSpeed,minDeviceSpeedLimit, maxDeviceSpeedLimit,  minGeofenceSpeedLimit, naxGeofenceSpeedLimit);
+        events = events.stream().filter(this::hasPermission).collect(Collectors.toList());
+        return events;
+    }
+
+    private boolean hasPermission(Event event){
+        try{
+            Context.getPermissionsManager().checkDevice(getUserId(), event.getDeviceId());
+            if(event.getGeofenceId() != 0)
+                Context.getGeofenceManager().checkItemPermission(getUserId(), event.getGeofenceId());
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
 
 }

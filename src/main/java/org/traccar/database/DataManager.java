@@ -15,6 +15,7 @@
  */
 package org.traccar.database;
 
+import com.sun.jna.platform.win32.WinBase;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import liquibase.Contexts;
@@ -29,36 +30,18 @@ import org.slf4j.LoggerFactory;
 import org.traccar.Context;
 import org.traccar.config.Config;
 import org.traccar.config.Keys;
-import org.traccar.model.Attribute;
-import org.traccar.model.BaseModel;
+import org.traccar.model.*;
 import org.traccar.model.Calendar;
-import org.traccar.model.Command;
-import org.traccar.model.Device;
-import org.traccar.model.Driver;
-import org.traccar.model.Event;
-import org.traccar.model.Geofence;
-import org.traccar.model.Group;
-import org.traccar.model.Maintenance;
-import org.traccar.model.ManagedUser;
-import org.traccar.model.Notification;
-import org.traccar.model.Order;
-import org.traccar.model.Permission;
-import org.traccar.model.Position;
-import org.traccar.model.Server;
-import org.traccar.model.Statistics;
-import org.traccar.model.User;
 
 import javax.sql.DataSource;
+import javax.ws.rs.QueryParam;
 import java.beans.Introspector;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataManager {
 
@@ -363,6 +346,114 @@ public class DataManager {
                 .setDate("from", from)
                 .setDate("to", to)
                 .executeQuery(Event.class);
+    }
+
+    public Collection<Event> getEvents(long deviceId, String type, Date from, Date to) throws SQLException {
+        return QueryBuilder.create(dataSource, getQuery("database.selectEventsWithType"))
+                .setLong("deviceId", deviceId)
+                .setDate("from", from)
+                .setDate("to", to)
+                .setString("type", type)
+                .executeQuery(Event.class);
+    }
+
+
+    private boolean isEmptyList(List<Long> list){
+        return list == null || list.isEmpty();
+    }
+
+    private String createInClause(String column, List<Long> list){
+        if(isEmptyList(list)) return null;
+        return String.format("%s in (%s)", column, String.join(",", list.stream().map(String::valueOf).collect(Collectors.toList())));
+    }
+
+
+    public Collection<ExtendedEvent> getOverspeedEvents(
+            List<Long> groupIds,
+            List<Long> deviceIds,
+            Date from,
+            Date to,
+            List<Long> geofences,
+            boolean includeOutsideGeofences,
+            int minDeviceSpeed,
+            int maxDeviceSpeed,
+            int minDeviceSpeedLimit,
+            int maxDeviceSpeedLimit,
+            int minGeofenceSpeedLimit,
+            int maxGeofenceSpeedLimit)
+            throws SQLException {
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT tc_events.*, tc_geofences.name as geofenceName, tc_devices.groupid as groupid" +
+                " FROM tc_events" +
+                " join tc_devices on tc_devices.id = tc_events.deviceid" +
+                " join tc_positions on tc_positions.id = tc_events.positionid" +
+                " left join tc_geofences on tc_geofences.id = tc_events.geofenceid WHERE ");
+
+        // All clauses will be joined with an "AND" as delimiter
+        List<String> clauses = new ArrayList<>();
+        if(!isEmptyList(groupIds) && !isEmptyList(deviceIds))
+        {
+            clauses.add(String.format("(%s OR %s)",
+                    createInClause("groupid", groupIds),
+                    createInClause("tc_events.deviceId", deviceIds)));
+        }
+        else if(!isEmptyList(groupIds)){
+            clauses.add(createInClause("groupid", groupIds));
+        }
+        else if(!isEmptyList(deviceIds))
+        {
+            clauses.add(createInClause("tc_events.deviceId", deviceIds));
+        }
+
+        clauses.add("tc_events.type = 'deviceOverspeed'");
+        if(!isEmptyList(geofences)){
+            String inClause = createInClause("geofenceid", geofences);
+            if(includeOutsideGeofences)
+                clauses.add(String.format(" (%s OR geofenceid is NULL)", inClause));
+            else
+                clauses.add(inClause);
+
+        }
+
+
+        if(!includeOutsideGeofences){
+            clauses.add(" geofenceid IS NOT NULL");
+        }
+
+        if(maxDeviceSpeed > 0) {
+            clauses.add(String.format("tc_positions.speed BETWEEN %d AND %d", minDeviceSpeed, maxDeviceSpeed));
+        }
+        else{
+            clauses.add(String.format("tc_positions.speed >= %d", minDeviceSpeed));
+        }
+        if(maxDeviceSpeedLimit > 0){
+            clauses.add(String.format("CAST (tc_devices.attributes::jsonb->'speedLimit' as FLOAT) BETWEEN %d AND %d", minDeviceSpeedLimit, maxDeviceSpeedLimit));
+        }
+        else{
+            clauses.add(String.format("CAST (tc_devices.attributes::jsonb->'speedLimit' as FLOAT) >= %d", minDeviceSpeedLimit));
+        }
+        String geofenceSpeedLimit = "";
+        if(maxGeofenceSpeedLimit > 0){
+
+            geofenceSpeedLimit = String.format("CAST (tc_geofences.attributes::jsonb->'speedLimit' as FLOAT) BETWEEN %d AND %d", minGeofenceSpeedLimit, maxGeofenceSpeedLimit);
+        }
+        else{
+            geofenceSpeedLimit = String.format("CAST (tc_geofences.attributes::jsonb->'speedLimit' as FLOAT) >= %d", minGeofenceSpeedLimit);
+        }
+
+        if(includeOutsideGeofences)
+            geofenceSpeedLimit += " OR geofenceid IS NULL";
+        clauses.add(geofenceSpeedLimit);
+
+        clauses.add("eventTime between :from AND :to ) ORDER BY eventTime");
+
+        query.append(String.format("(%s", String.join(") AND (", clauses)));
+
+        return QueryBuilder.create(dataSource, query.toString())
+                .setDate("from", from)
+                .setDate("to", to)
+                .executeQuery(ExtendedEvent.class);
     }
 
     public Collection<Statistics> getStatistics(Date from, Date to) throws SQLException {

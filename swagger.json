@@ -1528,6 +1528,19 @@
         }
       }
     },
+    "/events/overspeed": {
+      "get": {
+        "summary": "Fetch a list of the overspeed events within the time period for the devices, groups and/or the user doing the request",
+        "description": "if no group id nor list of device ids is provided, the result will contain all the user's events",
+        "tags": ["Reports"],
+        "parameters": [
+          {
+
+          }
+        ]
+      }
+    }
+    ,
     "/reports/route": {
       "get": {
         "summary": "Fetch a list of Positions within the time period for the Devices or Groups",

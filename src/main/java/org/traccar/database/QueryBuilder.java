@@ -79,7 +79,11 @@ public final class QueryBuilder {
         int index = 1;
 
         for (int i = 0; i < length; i++) {
-
+            if(i < length - 1 && query.charAt(i) == ':')
+                if(query.charAt(i) == query.charAt(i + 1) ) {
+                    i+=2;
+                    parsedQuery.append("::");
+                }
             char c = query.charAt(i);
 
             // String end
@@ -380,13 +384,18 @@ public final class QueryBuilder {
         }
     }
 
+    public <T> Collection<T> executeStatement(Class<T> clazz, PreparedStatement statement) throws SQLException{
+        this.statement = statement;
+        return executeQuery(clazz);
+    }
+
     public <T> Collection<T> executeQuery(Class<T> clazz) throws SQLException {
         List<T> result = new LinkedList<>();
 
         if (query != null) {
 
             try {
-
+                LOGGER.info(statement.toString());
                 try (ResultSet resultSet = statement.executeQuery()) {
 
                     ResultSetMetaData resultMetaData = resultSet.getMetaData();
@@ -481,5 +490,4 @@ public final class QueryBuilder {
 
         return result;
     }
-
 }

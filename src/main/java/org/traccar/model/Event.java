@@ -103,5 +103,4 @@ public class Event extends Message {
     public void setMaintenanceId(long maintenanceId) {
         this.maintenanceId = maintenanceId;
     }
-
 }
