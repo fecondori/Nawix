@@ -16,10 +16,7 @@
 package org.traccar.api.resource;
 
 import java.sql.SQLException;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.function.Predicate;
@@ -32,8 +29,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import liquibase.pro.packaged.Q;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.traccar.Context;
 import org.traccar.api.BaseResource;
+import org.traccar.database.DataManager;
+import org.traccar.helper.Log;
 import org.traccar.model.*;
 import org.traccar.model.Calendar;
 
@@ -42,7 +43,7 @@ import org.traccar.model.Calendar;
 @Consumes(MediaType.APPLICATION_JSON)
 
 public class EventResource extends BaseResource {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventResource.class);
     @Path("{id}")
     @GET
     public Event get(@PathParam("id") long id) throws SQLException {
@@ -78,34 +79,59 @@ public class EventResource extends BaseResource {
             @QueryParam("maxDeviceSpeedLimit") int maxDeviceSpeedLimit
             ) throws SQLException {
 
-        if(from == null){
+        if (from == null) {
             //System.out.println("No from date provided");
-            LocalDate local = LocalDate.now().minusYears(100);
-            from = java.sql.Date.from(local.atStartOfDay().toInstant(ZoneOffset.UTC));
+            from = Date.from(ZonedDateTime.parse("1990-01-01T12:00:00+01:00").toInstant());
+            //LocalDate local = LocalDate.now().minusYears(1);
+            //from = java.sql.Date.from(local.atStartOfDay().toInstant(ZoneOffset.UTC));
         }
-        if(to == null){
+        if (to == null) {
             //System.out.println("No to date provided");
             LocalDate local = LocalDate.now().plusYears(1);
             to = java.sql.Date.from(local.atStartOfDay().toInstant(ZoneOffset.UTC));
         }
 
-        // Optimize performance of permissions
+        // Performance can still be optimized but several changes to logic must be done
 
-        Collection<ExtendedEvent>events = Context.getDataManager().getOverspeedEvents(groupIds, deviceIds, from, to, geofencesIds, includeOutsideGeofences, minDeviceSpeed, maxDeviceSpeed,minDeviceSpeedLimit, maxDeviceSpeedLimit,  minGeofenceSpeedLimit, naxGeofenceSpeedLimit);
-        events = events.stream().filter(this::hasPermission).collect(Collectors.toList());
+        // get events from db with the specified params
+        Collection<ExtendedEvent> events = Context.getDataManager().getOverspeedEvents(groupIds, deviceIds, from, to, geofencesIds, includeOutsideGeofences, minDeviceSpeed, maxDeviceSpeed, minDeviceSpeedLimit, maxDeviceSpeedLimit, minGeofenceSpeedLimit, naxGeofenceSpeedLimit);
+        // get all distinct devices in the events
+        Collection<Long> permittedDevices = events.stream().map(e -> e.getDeviceId()).distinct().filter(this::hasDevicePermission).collect(Collectors.toList());
+        // get all distinct geofences in the eventes
+        Collection<Long> permittedGeofences = events.stream().filter(e->e.getGeofenceId() > 0).map(e -> e.getGeofenceId()).distinct().filter(this::hasGeofencePermission).collect(Collectors.toList());
+
+        //events = events.stream().filter(e-> permittedDevices.contains(e.getDeviceId()))
+        //remove all events whose device nor geofence is contained in the previous lists
+        events = events.stream().filter(e-> permittedDevices.contains(e.getDeviceId()) && (permittedGeofences.contains(e.getGeofenceId()) || e.getGeofenceId() == 0)).collect(Collectors.toList());
         return events;
+
+
+        //return events;
     }
 
-    private boolean hasPermission(Event event){
+    private boolean hasDevicePermission(long deviceId){
         try{
-            Context.getPermissionsManager().checkDevice(getUserId(), event.getDeviceId());
-            if(event.getGeofenceId() != 0)
-                Context.getGeofenceManager().checkItemPermission(getUserId(), event.getGeofenceId());
+            Context.getPermissionsManager().checkDevice(getUserId(), deviceId);
+            LOGGER.info(String.format("Permission granted user id: %d   device id: %d", getUserId(), deviceId));
             return true;
-        }catch (Exception e){
+        }
+        catch (Exception e){
+            LOGGER.info(String.format("Permission denied user id: %d   device id: %d", getUserId(), deviceId));
             return false;
         }
     }
 
+    private boolean hasGeofencePermission(long geofenceId){
+        try{
+            Context.getGeofenceManager().checkItemPermission(getUserId(), geofenceId);
 
+            LOGGER.info(String.format("Geofence Permission granted user id: %d   device id: %d", getUserId(), geofenceId));
+            return true;
+        }
+        catch (Exception e){
+
+            LOGGER.info(String.format("Geofence Permission denied user id: %d   device id: %d", getUserId(), geofenceId));
+            return false;
+        }
+    }
 }

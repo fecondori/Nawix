@@ -392,7 +392,7 @@ public class DataManager {
             throws SQLException {
 
         StringBuilder query = new StringBuilder();
-        query.append("SELECT tc_events.*, tc_geofences.name as geofenceName, tc_devices.groupid as groupid" +
+        query.append("SELECT tc_events.*, tc_geofences.name as geofenceName, tc_positions.latitude, tc_positions.longitude, tc_positions.altitude, tc_devices.groupid as groupid" +
                 " FROM tc_events" +
                 " join tc_devices on tc_devices.id = tc_events.deviceid" +
                 " join tc_positions on tc_positions.id = tc_events.positionid" +
@@ -429,7 +429,8 @@ public class DataManager {
         }
 
         clauses.add(formatSpeedRange("tc_positions.speed", minDeviceSpeed, maxDeviceSpeed));
-        clauses.add(formatSpeedRange("CAST (tc_devices.attributes::jsonb->'speedLimit' as FLOAT)", minDeviceSpeedLimit, maxDeviceSpeedLimit));
+        if(minDeviceSpeedLimit != 0 && maxDeviceSpeedLimit != 0)
+            clauses.add(formatSpeedRange("CAST (tc_devices.attributes::jsonb->'speedLimit' as FLOAT)", minDeviceSpeedLimit, maxDeviceSpeedLimit));
 
         String geofenceSpeedLimit = formatSpeedRange("CAST (tc_geofences.attributes::jsonb->'speedLimit' as FLOAT)", minGeofenceSpeedLimit, maxGeofenceSpeedLimit);
         if(includeOutsideGeofences)
