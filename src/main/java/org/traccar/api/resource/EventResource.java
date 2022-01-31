@@ -72,7 +72,7 @@ public class EventResource extends BaseResource {
             @QueryParam("geofenceIds") List<Long> geofencesIds,
             @QueryParam("includeOutsideGeofences") boolean includeOutsideGeofences,
             @QueryParam("minGeofenceSpeedLimit") int minGeofenceSpeedLimit,
-            @QueryParam("naxGeofenceSpeedLimit") int naxGeofenceSpeedLimit,
+            @QueryParam("maxGeofenceSpeedLimit") int naxGeofenceSpeedLimit,
             @QueryParam("minDeviceSpeed") int minDeviceSpeed,
             @QueryParam("maxDeviceSpeed") int maxDeviceSpeed,
             @QueryParam("minDeviceSpeedLimit") int minDeviceSpeedLimit,
