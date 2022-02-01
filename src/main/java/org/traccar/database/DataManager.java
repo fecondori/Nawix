@@ -429,7 +429,7 @@ public class DataManager {
         }
 
         clauses.add(formatSpeedRange("tc_positions.speed", minDeviceSpeed, maxDeviceSpeed));
-        if(minDeviceSpeedLimit != 0 && maxDeviceSpeedLimit != 0)
+        if(minDeviceSpeedLimit != 0 || maxDeviceSpeedLimit != 0)
             clauses.add(formatSpeedRange("CAST (tc_devices.attributes::jsonb->'speedLimit' as FLOAT)", minDeviceSpeedLimit, maxDeviceSpeedLimit));
 
         String geofenceSpeedLimit = formatSpeedRange("CAST (tc_geofences.attributes::jsonb->'speedLimit' as FLOAT)", minGeofenceSpeedLimit, maxGeofenceSpeedLimit);

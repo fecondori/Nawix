@@ -95,12 +95,13 @@ public class EventResource extends BaseResource {
 
         // get events from db with the specified params
         Collection<ExtendedEvent> events = Context.getDataManager().getOverspeedEvents(groupIds, deviceIds, from, to, geofencesIds, includeOutsideGeofences, minDeviceSpeed, maxDeviceSpeed, minDeviceSpeedLimit, maxDeviceSpeedLimit, minGeofenceSpeedLimit, naxGeofenceSpeedLimit);
+
         // get all distinct devices in the events
         Collection<Long> permittedDevices = events.stream().map(e -> e.getDeviceId()).distinct().filter(this::hasDevicePermission).collect(Collectors.toList());
+
         // get all distinct geofences in the eventes
         Collection<Long> permittedGeofences = events.stream().filter(e->e.getGeofenceId() > 0).map(e -> e.getGeofenceId()).distinct().filter(this::hasGeofencePermission).collect(Collectors.toList());
 
-        //events = events.stream().filter(e-> permittedDevices.contains(e.getDeviceId()))
         //remove all events whose device nor geofence is contained in the previous lists
         events = events.stream().filter(e-> permittedDevices.contains(e.getDeviceId()) && (permittedGeofences.contains(e.getGeofenceId()) || e.getGeofenceId() == 0)).collect(Collectors.toList());
         return events;
@@ -124,13 +125,11 @@ public class EventResource extends BaseResource {
     private boolean hasGeofencePermission(long geofenceId){
         try{
             Context.getGeofenceManager().checkItemPermission(getUserId(), geofenceId);
-
-            LOGGER.info(String.format("Geofence Permission granted user id: %d   device id: %d", getUserId(), geofenceId));
+            LOGGER.info(String.format("Geofence Permission granted user id: %d geofence id: %d", getUserId(), geofenceId));
             return true;
         }
         catch (Exception e){
-
-            LOGGER.info(String.format("Geofence Permission denied user id: %d   device id: %d", getUserId(), geofenceId));
+            LOGGER.info(String.format("Geofence Permission denied user id: %d geofence id: %d", getUserId(), geofenceId));
             return false;
         }
     }
