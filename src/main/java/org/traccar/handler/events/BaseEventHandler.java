@@ -15,10 +15,14 @@
  */
 package org.traccar.handler.events;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.traccar.BaseDataHandler;
 import org.traccar.Context;
+import org.traccar.handler.events.interceptors.BaseInterceptor;
+import org.traccar.handler.events.interceptors.InterceptorManager;
 import org.traccar.model.Event;
 import org.traccar.model.Position;
 
@@ -27,8 +31,13 @@ public abstract class BaseEventHandler extends BaseDataHandler {
     @Override
     protected Position handlePosition(Position position) {
         Map<Event, Position> events = analyzePosition(position);
-        if (events != null && Context.getNotificationManager() != null) {
-            Context.getNotificationManager().updateEvents(events);
+
+        if (events != null){
+            if(Context.getNotificationManager() != null)
+                Context.getNotificationManager().updateEvents(events);
+
+            if(Context.getInterceptorManager() != null)
+                Context.getInterceptorManager().interceptEvents(events);
         }
         return position;
     }

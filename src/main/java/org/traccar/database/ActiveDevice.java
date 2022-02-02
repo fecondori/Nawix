@@ -31,6 +31,10 @@ public class ActiveDevice {
     private final SocketAddress remoteAddress;
     private final boolean supportsLiveCommands;
 
+    public Protocol getProtocol(){
+        return protocol;
+    }
+
     public ActiveDevice(long deviceId, Protocol protocol, Channel channel, SocketAddress remoteAddress) {
         this.deviceId = deviceId;
         this.protocol = protocol;

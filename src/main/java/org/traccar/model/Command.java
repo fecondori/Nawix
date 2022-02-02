@@ -20,7 +20,8 @@ import org.traccar.database.QueryIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Command extends Message implements Cloneable {
+public class
+Command extends Message implements Cloneable {
 
     public static final String TYPE_CUSTOM = "custom";
     public static final String TYPE_IDENTIFICATION = "deviceIdentification";
