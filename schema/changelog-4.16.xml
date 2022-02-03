@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+  logicalFilePath="changelog-4.15">
+
+  <changeSet author="author" id="changelog-4.16">
+
+    <createTable tableName="tc_automaticcommands">
+      <column name="id" type="INT" autoIncrement="true">
+        <constraints primaryKey="true" />
+      </column>
+      <column name="description" type="VARCHAR(4000)">
+        <constraints nullable="false" />
+      </column>
+      <column name="type" type="VARCHAR(128)">
+        <constraints nullable="false" />
+      </column>
+      <column name="protocol" type="VARCHAR(50)">
+        <constraints nullable="false" />
+      </column>
+      <column name="attributes" type="VARCHAR(4000)">
+        <constraints nullable="false" />
+      </column>
+      <column name="commanddata" type="VARCHAR(400)">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+
+    <createTable tableName="tc_user_automaticcommand">
+      <column name="userid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="automaticcommandid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="tc_user_automaticcommand" baseColumnNames="userid" constraintName="fk_user_automaticcommand_userid" referencedTableName="tc_users" referencedColumnNames="id" onDelete="CASCADE" />
+    <addForeignKeyConstraint baseTableName="tc_user_automaticcommand" baseColumnNames="automaticcommandid" constraintName="fk_user_automaticcommand_automaticcommandid" referencedTableName="tc_automaticcommands" referencedColumnNames="id" onDelete="CASCADE" />
+
+    <createTable tableName="tc_group_automaticcommand">
+      <column name="groupid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="automaticcommandid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="tc_group_automaticcommand" baseColumnNames="groupid" constraintName="fk_group_automaticcommand_groupid" referencedTableName="tc_groups" referencedColumnNames="id" onDelete="CASCADE" />
+    <addForeignKeyConstraint baseTableName="tc_group_automaticcommand" baseColumnNames="automaticcommandid" constraintName="fk_group_automaticcommand_automaticcommandid" referencedTableName="tc_automaticcommands" referencedColumnNames="id" onDelete="CASCADE" />
+
+    <createTable tableName="tc_device_automaticcommand">
+      <column name="deviceid" type="INT">
+        <constraints nullable="false" />
+      </column>
+      <column name="automaticcommandid" type="INT">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+
+    <addForeignKeyConstraint baseTableName="tc_device_automaticcommand" baseColumnNames="deviceid" constraintName="fk_device_automaticcommand_deviceid" referencedTableName="tc_devices" referencedColumnNames="id" onDelete="CASCADE" />
+    <addForeignKeyConstraint baseTableName="tc_device_automaticcommand" baseColumnNames="automaticcommandid" constraintName="fk_device_automaticcommand_automaticcommandid" referencedTableName="tc_automaticcommands" referencedColumnNames="id" onDelete="CASCADE" />
+
+
+  </changeSet>
+
+</databaseChangeLog>

@@ -22,26 +22,9 @@ import org.apache.velocity.app.VelocityEngine;
 import org.eclipse.jetty.util.URIUtil;
 import org.traccar.config.Config;
 import org.traccar.config.Keys;
-import org.traccar.database.AttributesManager;
-import org.traccar.database.BaseObjectManager;
-import org.traccar.database.CalendarManager;
-import org.traccar.database.CommandsManager;
-import org.traccar.database.ConnectionManager;
-import org.traccar.database.DataManager;
-import org.traccar.database.DeviceManager;
-import org.traccar.database.DriversManager;
-import org.traccar.database.GeofenceManager;
-import org.traccar.database.GroupsManager;
-import org.traccar.database.IdentityManager;
-import org.traccar.database.LdapProvider;
-import org.traccar.database.MailManager;
-import org.traccar.database.MaintenancesManager;
-import org.traccar.database.MediaManager;
-import org.traccar.database.NotificationManager;
-import org.traccar.database.OrderManager;
-import org.traccar.database.PermissionsManager;
-import org.traccar.database.UsersManager;
+import org.traccar.database.*;
 import org.traccar.geocoder.Geocoder;
+import org.traccar.handler.events.interceptors.InterceptorManager;
 import org.traccar.helper.Log;
 import org.traccar.helper.SanitizerModule;
 import org.traccar.model.Attribute;
@@ -189,6 +172,12 @@ public final class Context {
         return notificationManager;
     }
 
+    private static InterceptorManager interceptorManager;
+
+    public static InterceptorManager getInterceptorManager(){
+        return interceptorManager;
+    }
+
     private static NotificatorManager notificatorManager;
 
     public static NotificatorManager getNotificatorManager() {
@@ -230,6 +219,10 @@ public final class Context {
     public static CommandsManager getCommandsManager() {
         return commandsManager;
     }
+
+    private static AutomaticCommandsManager automaticCommandManager;
+
+    public static AutomaticCommandsManager getAutomaticCommandManager() { return automaticCommandManager; }
 
     private static MaintenancesManager maintenancesManager;
 
@@ -294,9 +287,12 @@ public final class Context {
 
         client = ClientBuilder.newClient().register(new ObjectMapperContextResolver());
 
+
+
         if (config.hasKey(Keys.DATABASE_URL)) {
             dataManager = new DataManager(config);
         }
+
 
         if (config.hasKey(Keys.LDAP_URL)) {
             ldapProvider = new LdapProvider(config);
@@ -310,6 +306,7 @@ public final class Context {
             usersManager = new UsersManager(dataManager);
             groupsManager = new GroupsManager(dataManager);
             deviceManager = new DeviceManager(dataManager);
+
         }
 
         identityManager = deviceManager;
@@ -346,6 +343,10 @@ public final class Context {
         commandsManager = new CommandsManager(dataManager, config.getBoolean(Keys.COMMANDS_QUEUEING));
 
         orderManager = new OrderManager(dataManager);
+
+        interceptorManager = new InterceptorManager();
+
+        automaticCommandManager = new AutomaticCommandsManager(dataManager);
 
     }
 
