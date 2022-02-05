@@ -15,7 +15,10 @@
       <column name="description" type="VARCHAR(4000)">
         <constraints nullable="false" />
       </column>
-      <column name="type" type="VARCHAR(128)">
+      <column name="eventtype" type="VARCHAR(128)">
+        <constraints nullable="false" />
+      </column>
+      <column name="commandtype" type="VARCHAR(128)">
         <constraints nullable="false" />
       </column>
       <column name="protocol" type="VARCHAR(50)">

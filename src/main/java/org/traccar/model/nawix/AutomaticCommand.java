@@ -13,14 +13,14 @@ public class AutomaticCommand extends ExtendedModel {
         this.description = description;
     }
 
-    private String type;
+    private String eventType;
 
-    public String getType() {
-        return type;
+    public String getEventType() {
+        return eventType;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setEventType(String eventType) {
+        this.eventType = eventType;
     }
 
     private String commandData;
@@ -41,5 +41,15 @@ public class AutomaticCommand extends ExtendedModel {
 
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    private String commandType;
+
+    public String getCommandType() {
+        return commandType;
+    }
+
+    public void setCommandType(String commandType) {
+        this.commandType = commandType;
     }
 }

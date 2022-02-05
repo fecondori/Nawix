@@ -45,7 +45,7 @@ public class OverspeedInterceptor extends BaseInterceptor{
         try {
             Context.getCommandsManager().sendCommand(command);
         } catch (Exception e) {
-            LOGGER.info(e.getMessage());
+            LOGGER.info(e.toString());
         }
     }
 
@@ -53,7 +53,7 @@ public class OverspeedInterceptor extends BaseInterceptor{
         Command command = new Command();
         command.setDeviceId(deviceId);
         command.set("data", automaticCommand.getCommandData());
-        command.setType(command.getType());
+        command.setType(automaticCommand.getCommandType());
         return command;
     }
 
@@ -80,11 +80,11 @@ public class OverspeedInterceptor extends BaseInterceptor{
 
     private boolean matchesUpperSpeedLimit(AutomaticCommand command, int speedLimit){
         int cmdUpperSpeedLimit = command.getInteger("upperSpeedLimit");
-        return  speedLimit < cmdUpperSpeedLimit;
+        return  speedLimit <= cmdUpperSpeedLimit;
     }
 
     private boolean matchesLowerSpeedLimit(AutomaticCommand command, int speedLimit){
         int cmdLowerSpeedLimit = command.getInteger("lowerSpeedLimit");
-        return cmdLowerSpeedLimit <= speedLimit;
+        return cmdLowerSpeedLimit < speedLimit;
     }
 }
