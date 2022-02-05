@@ -30,25 +30,31 @@ public class OverspeedInterceptor extends BaseInterceptor{
     public void invoke(Event event, Position position) {
         if(automaticCommandManager == null) automaticCommandManager = Context.getAutomaticCommandManager();
         Set<Long> allIds = automaticCommandManager.getAllItems();
-        Collection<AutomaticCommand> commands = automaticCommandManager.getItems(allIds);
-        commands = commands.stream().filter(c -> shouldInvoke(c, event)).collect(Collectors.toList());
-        LOGGER.info(String.format("Commands to invoke for device %d: %d", position.getDeviceId(), commands.size()));
-        for(AutomaticCommand cmd : commands)
-            LOGGER.info(String.format("sending command %s", cmd.getCommandData()));
-            //sendCommand(cmd, position);
+        Collection<AutomaticCommand> automaticCommands = automaticCommandManager.getItems(allIds);
+        Collection<Command> commands = automaticCommands.stream()
+                .filter(cmd -> shouldInvoke(cmd, event))
+                .map(cmd -> fromAutomaticCommand(cmd, event.getDeviceId()))
+                .collect(Collectors.toList());
+
+        commands.forEach(this::sendCommand);
 
     }
 
-    private void sendCommand(AutomaticCommand cmd, Position position){
-        Command command = new Command();
-        command.setDeviceId(position.getDeviceId());
-        command.setType(cmd.getType());
-        command.set("data", cmd.getCommandData());
+    private void sendCommand(Command command){
+        LOGGER.info(String.format("sending command %s", command.getString("data")));
         try {
             Context.getCommandsManager().sendCommand(command);
         } catch (Exception e) {
             LOGGER.info(e.getMessage());
         }
+    }
+
+    private Command fromAutomaticCommand(AutomaticCommand automaticCommand, long deviceId) {
+        Command command = new Command();
+        command.setDeviceId(deviceId);
+        command.set("data", automaticCommand.getCommandData());
+        command.setType(command.getType());
+        return command;
     }
 
     public boolean shouldInvoke(AutomaticCommand command, Event event) {

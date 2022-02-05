@@ -18,9 +18,7 @@ public class InterceptorManager {
     }
 
     public void interceptEvents(Map<Event, Position> events){
-        for(Map.Entry<Event, Position> tuple : events.entrySet()){
-            interceptEvent(tuple.getKey(), tuple.getValue());
-        }
+        events.forEach((event, position) -> interceptEvent(event, position));
     }
 
     private void interceptEvent(Event event, Position position) {
