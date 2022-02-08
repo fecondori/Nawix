@@ -162,7 +162,7 @@
       <column name="description" value="Zona de 10" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 0, &quot;upperSpeedLimit&quot;: 10}" />
       <column name="commanddata" value="6164766D78303130"/>
     </insert>
@@ -170,7 +170,7 @@
       <column name="description" value="Zona de 20" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 10, &quot;upperSpeedLimit&quot;: 20}" />
       <column name="commanddata" value="6164766D78303230"/>
     </insert>
@@ -178,7 +178,7 @@
       <column name="description" value="Zona de 30" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 20, &quot;upperSpeedLimit&quot;: 30}" />
       <column name="commanddata" value="6164766D78303330"/>
     </insert>
@@ -186,7 +186,7 @@
       <column name="description" value="Zona de 40" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 30, &quot;upperSpeedLimit&quot;: 40}" />
       <column name="commanddata" value="6164766D78303430"/>
     </insert>
@@ -194,7 +194,7 @@
       <column name="description" value="Zona de 50" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 40, &quot;upperSpeedLimit&quot;: 50}" />
       <column name="commanddata" value="6164766D78303530"/>
     </insert>
@@ -202,7 +202,7 @@
       <column name="description" value="Zona de 60" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 50, &quot;upperSpeedLimit&quot;: 60}" />
       <column name="commanddata" value="6164766D78303630"/>
     </insert>
@@ -210,7 +210,7 @@
       <column name="description" value="Zona de 70" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 60, &quot;upperSpeedLimit&quot;: 70}" />
       <column name="commanddata" value="6164766D78303730"/>
     </insert>
@@ -218,7 +218,7 @@
       <column name="description" value="Zona de 80" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 70, &quot;upperSpeedLimit&quot;: 80}" />
       <column name="commanddata" value="6164766D78303830"/>
     </insert>
@@ -226,7 +226,7 @@
       <column name="description" value="Zona de 90" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 80, &quot;upperSpeedLimit&quot;: 90}" />
       <column name="commanddata" value="6164766D78303930"/>
     </insert>
@@ -234,7 +234,7 @@
       <column name="description" value="Zona de 100" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 90, &quot;upperSpeedLimit&quot;: 100}" />
       <column name="commanddata" value="6164766D78313030"/>
     </insert>
@@ -242,7 +242,7 @@
       <column name="description" value="Zona de 120" />
       <column name="eventtype" value="deviceOverspeed" />
       <column name="commandtype" value="custom" />
-      <column name="protocol" value="tetltonika" />
+      <column name="protocol" value="teltonika" />
       <column name="attributes" value="{&quot;lowerSpeedLimit&quot;: 100, &quot;upperSpeedLimit&quot;: 120}" />
       <column name="commanddata" value="6164766D78313230"/>
     </insert>
