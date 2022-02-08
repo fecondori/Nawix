@@ -28,6 +28,8 @@ public class OverspeedInterceptor extends BaseInterceptor{
 
     @Override
     public void invoke(Event event, Position position) {
+
+        LOGGER.info(String.format("Intercepting event, device id: %d, event id: %d, position id:", event.getDeviceId(), event.getId(), position.getDeviceId()));
         if(automaticCommandManager == null) automaticCommandManager = Context.getAutomaticCommandManager();
         Set<Long> allIds = automaticCommandManager.getAllItems();
         Collection<AutomaticCommand> automaticCommands = automaticCommandManager.getItems(allIds);
@@ -36,12 +38,15 @@ public class OverspeedInterceptor extends BaseInterceptor{
                 .map(cmd -> fromAutomaticCommand(cmd, event.getDeviceId()))
                 .collect(Collectors.toList());
 
-        commands.forEach(this::sendCommand);
+        for (Command command : commands){
+            LOGGER.info(String.format("Trying to send command %s, device id: %d, event id: %d", command.getString("data"), event.getDeviceId(), event.getId()));
+            sendCommand(command);
+        }
 
     }
 
     private void sendCommand(Command command){
-        LOGGER.info(String.format("sending command %s", command.getString("data")));
+
         try {
             Context.getCommandsManager().sendCommand(command);
         } catch (Exception e) {
