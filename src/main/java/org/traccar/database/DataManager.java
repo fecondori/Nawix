@@ -388,7 +388,8 @@ public class DataManager {
             int minDeviceSpeedLimit,
             int maxDeviceSpeedLimit,
             int minGeofenceSpeedLimit,
-            int maxGeofenceSpeedLimit)
+            int maxGeofenceSpeedLimit,
+            String speedUnit)
             throws SQLException {
 
         StringBuilder query = new StringBuilder();
@@ -441,10 +442,13 @@ public class DataManager {
 
         query.append(String.format("(%s)", String.join(") AND (", clauses))).append(" ORDER BY eventTime");
 
-        return QueryBuilder.create(dataSource, query.toString())
+        Collection<ExtendedEvent> result = QueryBuilder.create(dataSource, query.toString())
                 .setDate("from", from)
                 .setDate("to", to)
                 .executeQuery(ExtendedEvent.class);
+        //if(speedUnit == )
+
+        return result;
     }
 
     public Collection<Statistics> getStatistics(Date from, Date to) throws SQLException {

@@ -78,7 +78,11 @@ public class EventResource extends BaseResource {
             @QueryParam("minDeviceSpeedLimit") int minDeviceSpeedLimit,
             @QueryParam("maxDeviceSpeedLimit") int maxDeviceSpeedLimit
             ) throws SQLException {
-
+        String speedUnit = Context.getUsersManager().getById(getUserId()).getString("speedUnit");
+        if(speedUnit != null)
+            speedUnit = speedUnit.toLowerCase();
+        else
+            speedUnit = "kn";
         if (from == null) {
             //System.out.println("No from date provided");
             from = Date.from(ZonedDateTime.parse("1990-01-01T12:00:00+01:00").toInstant());
@@ -94,7 +98,7 @@ public class EventResource extends BaseResource {
         // Performance can still be optimized but several changes to logic must be done
 
         // get events from db with the specified params
-        Collection<ExtendedEvent> events = Context.getDataManager().getOverspeedEvents(groupIds, deviceIds, from, to, geofencesIds, includeOutsideGeofences, minDeviceSpeed, maxDeviceSpeed, minDeviceSpeedLimit, maxDeviceSpeedLimit, minGeofenceSpeedLimit, naxGeofenceSpeedLimit);
+        Collection<ExtendedEvent> events = Context.getDataManager().getOverspeedEvents(groupIds, deviceIds, from, to, geofencesIds, includeOutsideGeofences, minDeviceSpeed, maxDeviceSpeed, minDeviceSpeedLimit, maxDeviceSpeedLimit, minGeofenceSpeedLimit, naxGeofenceSpeedLimit, speedUnit);
 
         // get all distinct devices in the events
         Collection<Long> permittedDevices = events.stream().map(e -> e.getDeviceId()).distinct().filter(this::hasDevicePermission).collect(Collectors.toList());
