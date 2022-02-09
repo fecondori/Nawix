@@ -367,12 +367,12 @@ public class DataManager {
         return String.format("%s in (%s)", column, String.join(",", list.stream().map(String::valueOf).collect(Collectors.toList())));
     }
 
-    private String formatSpeedRange(String column, int min, int max){
+    private String formatSpeedRange(String column, double min, double max){
         if(max > 0){
-            return String.format("%s BETWEEN %d AND %d", column, min, max);
+            return String.format("%s BETWEEN %f AND %f", column, min, max);
         }
         else{
-            return String.format("%s >= %d", column, min);
+            return String.format("%s >= %f", column, min);
         }
     }
 
@@ -383,13 +383,12 @@ public class DataManager {
             Date to,
             List<Long> geofences,
             boolean includeOutsideGeofences,
-            int minDeviceSpeed,
-            int maxDeviceSpeed,
-            int minDeviceSpeedLimit,
-            int maxDeviceSpeedLimit,
-            int minGeofenceSpeedLimit,
-            int maxGeofenceSpeedLimit,
-            String speedUnit)
+            double minDeviceSpeed,
+            double maxDeviceSpeed,
+            double minDeviceSpeedLimit,
+            double maxDeviceSpeedLimit,
+            double minGeofenceSpeedLimit,
+            double maxGeofenceSpeedLimit)
             throws SQLException {
 
         StringBuilder query = new StringBuilder();
