@@ -13,6 +13,9 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/***
+ * Data in database must be in Knots
+ */
 public class OverspeedInterceptor extends BaseInterceptor{
     Logger LOGGER = LoggerFactory.getLogger(OverspeedInterceptor.class);
     private AutomaticCommandsManager automaticCommandManager;
@@ -28,6 +31,8 @@ public class OverspeedInterceptor extends BaseInterceptor{
 
     @Override
     public void invoke(Event event, Position position) {
+
+        LOGGER.info(String.format("Intercepting event, device id: %d, event id: %d, position id:", event.getDeviceId(), event.getId(), position.getDeviceId()));
         if(automaticCommandManager == null) automaticCommandManager = Context.getAutomaticCommandManager();
         Set<Long> allIds = automaticCommandManager.getAllItems();
         Collection<AutomaticCommand> automaticCommands = automaticCommandManager.getItems(allIds);
@@ -36,12 +41,14 @@ public class OverspeedInterceptor extends BaseInterceptor{
                 .map(cmd -> fromAutomaticCommand(cmd, event.getDeviceId()))
                 .collect(Collectors.toList());
 
-        commands.forEach(this::sendCommand);
+        for (Command command : commands){
+            LOGGER.info(String.format("Trying to send command %s, device id: %d, event id: %d", command.getString("data"), event.getDeviceId(), event.getId()));
+            sendCommand(command);
+        }
 
     }
 
     private void sendCommand(Command command){
-        LOGGER.info(String.format("sending command %s", command.getString("data")));
         try {
             Context.getCommandsManager().sendCommand(command);
         } catch (Exception e) {
@@ -59,9 +66,11 @@ public class OverspeedInterceptor extends BaseInterceptor{
 
     public boolean shouldInvoke(AutomaticCommand command, Event event) {
         boolean onlyInsideGeofence = event.getInteger("geofenceId") != 0;
-        int speedLimit = event.getInteger("speedLimit");
+        // event speedLimit should always be in knots
+        double speedLimit = event.getDouble("speedLimit");
         if(speedLimit == 0) return false;
-
+        //LOGGER.info("Device Speed: " + event.getDouble("speed"));
+        //LOGGER.info("Speed Limit: " + speedLimit);
         String protocol = Context.getConnectionManager().getActiveDevice(event.getDeviceId()).getProtocol().getName();
 
         return matchesOnlyInsideGeofences(command, onlyInsideGeofence, event.getGeofenceId()) &&
@@ -78,13 +87,28 @@ public class OverspeedInterceptor extends BaseInterceptor{
         return command.getBoolean("onlyInsideGeofences") && geofenceId != 0 || !onlyInsideGeofence;
     }
 
-    private boolean matchesUpperSpeedLimit(AutomaticCommand command, int speedLimit){
-        int cmdUpperSpeedLimit = command.getInteger("upperSpeedLimit");
+    /***
+     *
+     * @param command
+     * @param speedLimit in knots
+     * @return
+     */
+    private boolean matchesUpperSpeedLimit(AutomaticCommand command, double speedLimit){
+        double cmdUpperSpeedLimit = command.getDouble("upperSpeedLimit");
+        //LOGGER.info(String.format("Upper Speed Limit: %f", cmdUpperSpeedLimit));
         return  speedLimit <= cmdUpperSpeedLimit;
     }
 
-    private boolean matchesLowerSpeedLimit(AutomaticCommand command, int speedLimit){
-        int cmdLowerSpeedLimit = command.getInteger("lowerSpeedLimit");
+    /***
+     *
+     * @param command
+     * @param speedLimit speed in knots
+     * @return
+     */
+    private boolean matchesLowerSpeedLimit(AutomaticCommand command, double speedLimit){
+        double cmdLowerSpeedLimit = command.getDouble("lowerSpeedLimit");
+
+        //LOGGER.info(String.format("lower Speed Limit: %f", cmdLowerSpeedLimit));
         return cmdLowerSpeedLimit < speedLimit;
     }
 }
