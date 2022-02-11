@@ -67,9 +67,10 @@ public class OverspeedInterceptor extends BaseInterceptor{
     public boolean shouldInvoke(AutomaticCommand command, Event event) {
         boolean onlyInsideGeofence = event.getInteger("geofenceId") != 0;
         // event speedLimit should always be in knots
-        int speedLimit = event.getInteger("speedLimit");
+        double speedLimit = event.getDouble("speedLimit");
         if(speedLimit == 0) return false;
-
+        //LOGGER.info("Device Speed: " + event.getDouble("speed"));
+        //LOGGER.info("Speed Limit: " + speedLimit);
         String protocol = Context.getConnectionManager().getActiveDevice(event.getDeviceId()).getProtocol().getName();
 
         return matchesOnlyInsideGeofences(command, onlyInsideGeofence, event.getGeofenceId()) &&
@@ -92,8 +93,9 @@ public class OverspeedInterceptor extends BaseInterceptor{
      * @param speedLimit in knots
      * @return
      */
-    private boolean matchesUpperSpeedLimit(AutomaticCommand command, int speedLimit){
-        int cmdUpperSpeedLimit = command.getInteger("upperSpeedLimit");
+    private boolean matchesUpperSpeedLimit(AutomaticCommand command, double speedLimit){
+        double cmdUpperSpeedLimit = command.getDouble("upperSpeedLimit");
+        //LOGGER.info(String.format("Upper Speed Limit: %f", cmdUpperSpeedLimit));
         return  speedLimit <= cmdUpperSpeedLimit;
     }
 
@@ -103,8 +105,10 @@ public class OverspeedInterceptor extends BaseInterceptor{
      * @param speedLimit speed in knots
      * @return
      */
-    private boolean matchesLowerSpeedLimit(AutomaticCommand command, int speedLimit){
-        int cmdLowerSpeedLimit = command.getInteger("lowerSpeedLimit");
+    private boolean matchesLowerSpeedLimit(AutomaticCommand command, double speedLimit){
+        double cmdLowerSpeedLimit = command.getDouble("lowerSpeedLimit");
+
+        //LOGGER.info(String.format("lower Speed Limit: %f", cmdLowerSpeedLimit));
         return cmdLowerSpeedLimit < speedLimit;
     }
 }
