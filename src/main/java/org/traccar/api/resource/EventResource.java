@@ -17,26 +17,19 @@ package org.traccar.api.resource;
 
 import java.sql.SQLException;
 import java.time.*;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import liquibase.pro.packaged.Q;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.traccar.Context;
 import org.traccar.api.BaseResource;
-import org.traccar.database.DataManager;
-import org.traccar.helper.Log;
+import org.traccar.helper.UnitsConverter;
 import org.traccar.model.*;
-import org.traccar.model.Calendar;
 
 @Path("events")
 @Produces(MediaType.APPLICATION_JSON)
@@ -71,13 +64,35 @@ public class EventResource extends BaseResource {
             @QueryParam("to") Date to,
             @QueryParam("geofenceIds") List<Long> geofencesIds,
             @QueryParam("includeOutsideGeofences") boolean includeOutsideGeofences,
-            @QueryParam("minGeofenceSpeedLimit") int minGeofenceSpeedLimit,
-            @QueryParam("maxGeofenceSpeedLimit") int naxGeofenceSpeedLimit,
-            @QueryParam("minDeviceSpeed") int minDeviceSpeed,
-            @QueryParam("maxDeviceSpeed") int maxDeviceSpeed,
-            @QueryParam("minDeviceSpeedLimit") int minDeviceSpeedLimit,
-            @QueryParam("maxDeviceSpeedLimit") int maxDeviceSpeedLimit
+            @QueryParam("minGeofenceSpeedLimit") double minGeofenceSpeedLimit,
+            @QueryParam("maxGeofenceSpeedLimit") double maxGeofenceSpeedLimit,
+            @QueryParam("minDeviceSpeed") double minDeviceSpeed,
+            @QueryParam("maxDeviceSpeed") double maxDeviceSpeed,
+            @QueryParam("minDeviceSpeedLimit") double minDeviceSpeedLimit,
+            @QueryParam("maxDeviceSpeedLimit") double maxDeviceSpeedLimit
             ) throws SQLException {
+        /*String speedUnit = Context.getUsersManager().getById(getUserId()).getString("speedUnit");
+        if(speedUnit != null)
+            speedUnit = speedUnit.toLowerCase();
+        else
+            speedUnit = "kn";
+
+        if(speedUnit == "kmh"){
+            minGeofenceSpeedLimit = UnitsConverter.knotsFromKph(minGeofenceSpeedLimit);
+            minDeviceSpeed = UnitsConverter.knotsFromKph(minDeviceSpeed);
+            minDeviceSpeedLimit = UnitsConverter.knotsFromKph(minDeviceSpeedLimit);
+            maxDeviceSpeed = UnitsConverter.knotsFromKph(maxDeviceSpeed);
+            maxGeofenceSpeedLimit = UnitsConverter.knotsFromKph(maxGeofenceSpeedLimit);
+            maxDeviceSpeedLimit = UnitsConverter.knotsFromKph(maxDeviceSpeedLimit);
+        }
+        else if (speedUnit == "mph"){
+            minGeofenceSpeedLimit = UnitsConverter.knotsFromMph(minGeofenceSpeedLimit);
+            minDeviceSpeed = UnitsConverter.knotsFromMph(minDeviceSpeed);
+            minDeviceSpeedLimit = UnitsConverter.knotsFromMph(minDeviceSpeedLimit);
+            maxDeviceSpeed = UnitsConverter.knotsFromMph(maxDeviceSpeed);
+            maxGeofenceSpeedLimit = UnitsConverter.knotsFromMph(maxGeofenceSpeedLimit);
+            maxDeviceSpeedLimit = UnitsConverter.knotsFromMph(maxDeviceSpeedLimit);
+        }*/
 
         if (from == null) {
             //System.out.println("No from date provided");
@@ -94,7 +109,7 @@ public class EventResource extends BaseResource {
         // Performance can still be optimized but several changes to logic must be done
 
         // get events from db with the specified params
-        Collection<ExtendedEvent> events = Context.getDataManager().getOverspeedEvents(groupIds, deviceIds, from, to, geofencesIds, includeOutsideGeofences, minDeviceSpeed, maxDeviceSpeed, minDeviceSpeedLimit, maxDeviceSpeedLimit, minGeofenceSpeedLimit, naxGeofenceSpeedLimit);
+        Collection<ExtendedEvent> events = Context.getDataManager().getOverspeedEvents(groupIds, deviceIds, from, to, geofencesIds, includeOutsideGeofences, minDeviceSpeed, maxDeviceSpeed, minDeviceSpeedLimit, maxDeviceSpeedLimit, minGeofenceSpeedLimit, maxGeofenceSpeedLimit);
 
         // get all distinct devices in the events
         Collection<Long> permittedDevices = events.stream().map(e -> e.getDeviceId()).distinct().filter(this::hasDevicePermission).collect(Collectors.toList());
@@ -113,11 +128,11 @@ public class EventResource extends BaseResource {
     private boolean hasDevicePermission(long deviceId){
         try{
             Context.getPermissionsManager().checkDevice(getUserId(), deviceId);
-            LOGGER.info(String.format("Permission granted user id: %d   device id: %d", getUserId(), deviceId));
+            //LOGGER.info(String.format("Permission granted user id: %d   device id: %d", getUserId(), deviceId));
             return true;
         }
         catch (Exception e){
-            LOGGER.info(String.format("Permission denied user id: %d   device id: %d", getUserId(), deviceId));
+            //LOGGER.info(String.format("Permission denied user id: %d   device id: %d", getUserId(), deviceId));
             return false;
         }
     }
@@ -125,11 +140,11 @@ public class EventResource extends BaseResource {
     private boolean hasGeofencePermission(long geofenceId){
         try{
             Context.getGeofenceManager().checkItemPermission(getUserId(), geofenceId);
-            LOGGER.info(String.format("Geofence Permission granted user id: %d geofence id: %d", getUserId(), geofenceId));
+            //LOGGER.info(String.format("Geofence Permission granted user id: %d geofence id: %d", getUserId(), geofenceId));
             return true;
         }
         catch (Exception e){
-            LOGGER.info(String.format("Geofence Permission denied user id: %d geofence id: %d", getUserId(), geofenceId));
+            //LOGGER.info(String.format("Geofence Permission denied user id: %d geofence id: %d", getUserId(), geofenceId));
             return false;
         }
     }

@@ -367,12 +367,12 @@ public class DataManager {
         return String.format("%s in (%s)", column, String.join(",", list.stream().map(String::valueOf).collect(Collectors.toList())));
     }
 
-    private String formatSpeedRange(String column, int min, int max){
+    private String formatSpeedRange(String column, double min, double max){
         if(max > 0){
-            return String.format("%s BETWEEN %d AND %d", column, min, max);
+            return String.format("%s BETWEEN %f AND %f", column, min, max);
         }
         else{
-            return String.format("%s >= %d", column, min);
+            return String.format("%s >= %f", column, min);
         }
     }
 
@@ -383,12 +383,12 @@ public class DataManager {
             Date to,
             List<Long> geofences,
             boolean includeOutsideGeofences,
-            int minDeviceSpeed,
-            int maxDeviceSpeed,
-            int minDeviceSpeedLimit,
-            int maxDeviceSpeedLimit,
-            int minGeofenceSpeedLimit,
-            int maxGeofenceSpeedLimit)
+            double minDeviceSpeed,
+            double maxDeviceSpeed,
+            double minDeviceSpeedLimit,
+            double maxDeviceSpeedLimit,
+            double minGeofenceSpeedLimit,
+            double maxGeofenceSpeedLimit)
             throws SQLException {
 
         StringBuilder query = new StringBuilder();
@@ -441,10 +441,13 @@ public class DataManager {
 
         query.append(String.format("(%s)", String.join(") AND (", clauses))).append(" ORDER BY eventTime");
 
-        return QueryBuilder.create(dataSource, query.toString())
+        Collection<ExtendedEvent> result = QueryBuilder.create(dataSource, query.toString())
                 .setDate("from", from)
                 .setDate("to", to)
                 .executeQuery(ExtendedEvent.class);
+        //if(speedUnit == )
+
+        return result;
     }
 
     public Collection<Statistics> getStatistics(Date from, Date to) throws SQLException {
