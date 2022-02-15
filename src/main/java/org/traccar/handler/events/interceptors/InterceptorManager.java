@@ -25,6 +25,9 @@ public class InterceptorManager {
         if(position.getOutdated()){
             LOGGER.info(String.format("Intercepted Postion %d is outdated, Event: %d", position.getId(), event.getId()));
         }
+        if(!position.getValid()){
+            LOGGER.info(String.format("Intercepted Postion %d is invalid, Event: %d", position.getId(), event.getId()));
+        }
         if (interceptors.containsKey(event.getType())) {
             BaseInterceptor interceptor = interceptors.get(event.getType());
             interceptor.invoke(event, position);
