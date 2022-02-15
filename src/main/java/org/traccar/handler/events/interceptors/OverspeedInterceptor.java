@@ -32,7 +32,7 @@ public class OverspeedInterceptor extends BaseInterceptor{
     @Override
     public void invoke(Event event, Position position) {
 
-        LOGGER.info(String.format("Intercepting event, device id: %d, event id: %d, position id:", event.getDeviceId(), event.getId(), position.getDeviceId()));
+        LOGGER.info(String.format("Intercepting overspeed event, device id: %d, event id: %d, position id:", event.getDeviceId(), event.getId(), position.getId()));
         if(automaticCommandManager == null) automaticCommandManager = Context.getAutomaticCommandManager();
         Set<Long> allIds = automaticCommandManager.getAllItems();
         Collection<AutomaticCommand> automaticCommands = automaticCommandManager.getItems(allIds);
@@ -69,6 +69,7 @@ public class OverspeedInterceptor extends BaseInterceptor{
         // event speedLimit should always be in knots
         double speedLimit = event.getDouble("speedLimit");
         if(speedLimit == 0) return false;
+        if (command.getEventType().compareTo(this.getType()) != 0) return false;
         //LOGGER.info("Device Speed: " + event.getDouble("speed"));
         //LOGGER.info("Speed Limit: " + speedLimit);
         String protocol = Context.getConnectionManager().getActiveDevice(event.getDeviceId()).getProtocol().getName();

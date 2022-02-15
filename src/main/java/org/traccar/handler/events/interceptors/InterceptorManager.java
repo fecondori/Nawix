@@ -22,6 +22,12 @@ public class InterceptorManager {
     }
 
     private void interceptEvent(Event event, Position position) {
+        if(position.getOutdated()){
+            LOGGER.info(String.format("Intercepted Postion %d is outdated, Event: %d", position.getId(), event.getId()));
+        }
+        if(!position.getValid()){
+            LOGGER.info(String.format("Intercepted Postion %d is invalid, Event: %d", position.getId(), event.getId()));
+        }
         if (interceptors.containsKey(event.getType())) {
             BaseInterceptor interceptor = interceptors.get(event.getType());
             interceptor.invoke(event, position);
@@ -29,7 +35,9 @@ public class InterceptorManager {
     }
 
     private void initInterceptors(){
+
         addInterceptor(new OverspeedInterceptor());
+        addInterceptor(new GeofenceEnterInterceptor());
     }
 
     public boolean addInterceptor(BaseInterceptor interceptor){
