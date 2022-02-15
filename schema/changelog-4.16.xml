@@ -247,6 +247,120 @@
       <column name="commanddata" value="6164766D78313230"/>
     </insert>
 
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Proximidad curva cerrada izquierda" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="gps103" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;CurvaCerradaIzquierda&quot;}" />
+      <column name="commanddata" value="61647A6363697A71"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Proximidad curva cerrada derecha" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="gps103" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;CurvaCerradaDerecha&quot;}" />
+      <column name="commanddata" value="61647A6363646572"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Proximidad pendiente fuerte" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="gps103" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;PendienteFuerte&quot;}" />
+      <column name="commanddata" value="6164706474667274"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Zona arqueologica en el entorno" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="gps103" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;ZonaArqueologica&quot;}" />
+      <column name="commanddata" value="61647A6E61727175"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Zona de comunidades" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="gps103" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;ZonaComunidades&quot;}" />
+      <column name="commanddata" value="61647A6E636F6D75"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Zona de medioambiente protegido" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="gps103" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;ZonaMedioambiente&quot;}" />
+      <column name="commanddata" value="61647A6E6D656461"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Proximidad pavimento resbaladizo" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="gps103" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;PavimentoResbaladizo&quot;}" />
+      <column name="commanddata" value="616470766D726573"/>
+    </insert>
+
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Proximidad curva cerrada izquierda" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="teltonika" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;CurvaCerradaIzquierda&quot;}" />
+      <column name="commanddata" value="61647A6363697A71"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Proximidad curva cerrada derecha" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="teltonika" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;CurvaCerradaDerecha&quot;}" />
+      <column name="commanddata" value="61647A6363646572"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Proximidad pendiente fuerte" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="teltonika" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;PendienteFuerte&quot;}" />
+      <column name="commanddata" value="6164706474667274"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Zona arqueologica en el entorno" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="teltonika" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;ZonaArqueologica&quot;}" />
+      <column name="commanddata" value="61647A6E61727175"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Zona de comunidades" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="teltonika" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;ZonaComunidades&quot;}" />
+      <column name="commanddata" value="61647A6E636F6D75"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Zona de medioambiente protegido" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="teltonika" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;ZonaMedioambiente&quot;}" />
+      <column name="commanddata" value="61647A6E6D656461"/>
+    </insert>
+    <insert tableName="tc_automaticcommands">
+      <column name="description" value="Proximidad pavimento resbaladizo" />
+      <column name="eventtype" value="geofenceEnter" />
+      <column name="commandtype" value="custom" />
+      <column name="protocol" value="teltonika" />
+      <column name="attributes" value="{&quot;geofenceType&quot;: &quot;PavimentoResbaladizo&quot;}" />
+      <column name="commanddata" value="616470766D726573"/>
+    </insert>
+
   </changeSet>
 
 </databaseChangeLog>
