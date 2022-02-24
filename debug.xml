@@ -3,7 +3,26 @@
 <!DOCTYPE properties SYSTEM 'http://java.sun.com/dtd/properties.dtd'>
 
 <properties>
+    <!--
+          byOperator filter will check if the Operator id is not 0 to mark a position as valid
+          -->
+    <entry key='outdatedPosition.byOperator'>true</entry>
 
+    <!--
+    byTimeDelta filter will mark as invalid any position whose server time delta with latest positions
+    is too small compared to the device time delta, this will mark the first valid position as invalid
+    because of the sequential sends by the device
+    -->
+    <entry key='outdatedPosition.byTimeDelta'>true</entry>
+
+    <!-- Max time difference in seconds between the first cached event and the last cached event -->
+    <entry key='outdatedPosition.cacheTimeLimit'>10</entry>
+
+    <!-- Max difference between deviceTimeDelta and serverTimeDelta (network error tolerance related)-->
+    <entry key='outdatedPosition.byTimeDelta.maxDelta'>5</entry>
+
+    <!-- Max difference between deviceTimeDelta and serverTimeDelta (network error tolerance related)-->
+    <entry key='outdatedPosition.byTimeDelta.minDelta'>1</entry>
     <entry key='config.default'>./setup/default.xml</entry>
 
     <entry key='web.path'>./traccar-web/web</entry>

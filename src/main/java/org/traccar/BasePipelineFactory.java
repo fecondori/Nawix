@@ -23,22 +23,7 @@ import io.netty.channel.ChannelOutboundHandler;
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.traccar.config.Keys;
-import org.traccar.handler.ComputedAttributesHandler;
-import org.traccar.handler.CopyAttributesHandler;
-import org.traccar.handler.DefaultDataHandler;
-import org.traccar.handler.DistanceHandler;
-import org.traccar.handler.EngineHoursHandler;
-import org.traccar.handler.FilterHandler;
-import org.traccar.handler.GeocoderHandler;
-import org.traccar.handler.GeolocationHandler;
-import org.traccar.handler.HemisphereHandler;
-import org.traccar.handler.MotionHandler;
-import org.traccar.handler.NetworkMessageHandler;
-import org.traccar.handler.OpenChannelHandler;
-import org.traccar.handler.RemoteAddressHandler;
-import org.traccar.handler.SpeedLimitHandler;
-import org.traccar.handler.StandardLoggingHandler;
-import org.traccar.handler.TimeHandler;
+import org.traccar.handler.*;
 import org.traccar.handler.events.AlertEventHandler;
 import org.traccar.handler.events.BehaviorEventHandler;
 import org.traccar.handler.events.CommandResultEventHandler;
@@ -135,6 +120,8 @@ public abstract class BasePipelineFactory extends ChannelInitializer<Channel> {
                 ComputedAttributesHandler.class,
                 WebDataHandler.class,
                 DefaultDataHandler.class,
+
+                OutdatedPositionHandler.class,
                 CommandResultEventHandler.class,
                 OverspeedEventHandler.class,
                 BehaviorEventHandler.class,

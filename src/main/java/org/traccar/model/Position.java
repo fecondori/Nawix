@@ -302,4 +302,14 @@ public class Position extends Message {
         return super.getType();
     }
 
+    private boolean passOutdatedFilters;
+
+    @QueryIgnore
+    public boolean getPassOutdatedFilters() {
+        return passOutdatedFilters;
+    }
+
+    public void setPassOutdatedFilters(boolean passOutdatedFilters) {
+        this.passOutdatedFilters = passOutdatedFilters;
+    }
 }

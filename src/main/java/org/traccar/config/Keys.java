@@ -1316,4 +1316,30 @@ public final class Keys {
             Collections.singletonList(KeyType.GLOBAL),
             "time,position,speed,course,accuracy,result");
 
+    public static final ConfigKey<Boolean> OUTDATED_POSITION_BY_OPERATOR = new ConfigKey<>(
+            "outdatedPosition.byOperator",
+            Collections.singletonList(KeyType.GLOBAL),
+            true);
+
+    public static final ConfigKey<Boolean> OUTDATED_POSITION_BY_TIME_DELTA = new ConfigKey<>(
+            "outdatedPosition.byTimeDelta",
+            Collections.singletonList(KeyType.GLOBAL),
+            true);
+
+    public static final ConfigKey<Integer> OUTDATED_POSITION_CACHE_TIME_LIMIT = new ConfigKey<>(
+            "outdatedPosition.cacheTimeLimit",
+            Collections.singletonList(KeyType.GLOBAL),
+            10);
+
+
+    public static final ConfigKey<Integer> OUTDATED_POSITION_BY_TIME_DELTA_MAX_DELTA = new ConfigKey<>(
+            "outdatedPosition.byTimeDelta.maxDelta",
+            Collections.singletonList(KeyType.GLOBAL),
+            5);
+
+    public static final ConfigKey<Integer> OUTDATED_POSITION_BY_TIME_DELTA_MIN_DELTA = new ConfigKey<>(
+            "outdatedPosition.byTimeDelta.minDelta",
+            Collections.singletonList(KeyType.GLOBAL),
+            0);
+
 }

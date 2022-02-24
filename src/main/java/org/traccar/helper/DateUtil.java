@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public final class DateUtil {
 
@@ -73,6 +74,10 @@ public final class DateUtil {
         } else {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date);
         }
+    }
+
+    public static long getDelta(Date actual, Date old){
+        return TimeUnit.MILLISECONDS.toSeconds(actual.getTime() - old.getTime());
     }
 
 }
